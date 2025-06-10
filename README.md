@@ -25,7 +25,7 @@ We used publicly available biomedical corpora:
 
 ### 2.2. Preprocessing Steps
 - Data followed the IOBES format for entity labeling.  
-- We used a custom script to align labels with tokens produced by BioBERT’s word-piece tokenizer.
+- We used a custom script to align labels with tokens produced by BioBERT’s WordPiece tokenizer.
 
 ### 2.3. Data Notes
 - All datasets were heavily **imbalanced**, with a majority of tokens labeled as 'O'.  
@@ -73,7 +73,7 @@ We used publicly available biomedical corpora:
 ---
 
 ## 5. Challenges Encountered
-- Aligning word-piece tokens to original IOBES tags was non-trivial.  
+- Aligning WordPiece tokens to original IOBES tags was non-trivial.  
 - Larger datasets risked overpowering smaller ones in MTL training.  
 - MTL incurred higher GPU and training time costs.
 
