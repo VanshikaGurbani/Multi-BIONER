@@ -21,7 +21,9 @@ We used publicly available biomedical corpora:
 - **BC4CHEMD** – Chemical entities (~1.1M labeled tokens)  
 - **BC5CDR** – Chemical and disease mentions (~170k labeled tokens)  
 - **JNLPBA** – Biomedical terms like proteins and genes (~150k labeled tokens)  
-- **NCBI Disease** – Disease-specific references (~30k labeled tokens)
+- **NCBI Disease** – Disease-specific references (~30k labeled tokens, distributed as `NCBI-disease-IOBES.zip`)
+
+> **Note**: Dataset archives are named with the `*-IOBES.zip` pattern. Ensure you download and extract the correct file (e.g., `NCBI-disease-IOBES.zip` for the NCBI corpus) before preprocessing.
 
 ### 2.2. Preprocessing Steps
 - Data followed the IOBES format for entity labeling.  
