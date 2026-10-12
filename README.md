@@ -59,16 +59,22 @@ We used publicly available biomedical corpora:
 
 ## 4. Key Results
 
-### 4.1. STL vs MTL Performance
-#### BC2GM
-- STL: F1 = 0.98  
-- MTL: F1 = 0.96  
+All metrics come from the token-level classification reports in the notebooks (scikit-learn style, over the IOBES tags **including the non-entity `O` class**). Overall token accuracy is inflated by the `O` class (roughly 81-93% of tokens, depending on the corpus), so the macro-F1 is the more informative number. These are token-level scores, not entity-level (span) F1.
 
-#### NCBI Disease
-- STL: F1 = 0.99  
-- MTL: F1 = 0.98  
+| Dataset | STL macro-F1 | MTL macro-F1 | STL token accuracy | MTL token accuracy |
+|:---|:---:|:---:|:---:|:---:|
+| BC2GM | 0.88 | 0.86 | 0.98 | 0.96 |
+| BC4CHEMD | 0.93 | 0.93 | 0.99 | 0.98 |
+| BC5CDR | 0.86 | 0.84 | 0.97 | 0.96 |
+| JNLPBA | 0.71 | 0.71 | 0.93 | 0.90 |
+| NCBI Disease | 0.91 | 0.90 | 0.99 | 0.97 |
 
-**STL** performed well on larger datasets like BC2GM, while **MTL** demonstrated better generalization and improved accuracy on smaller datasets such as NCBI.
+(STL = single-task learning, MTL = multi-task learning; final-epoch values.)
+
+### 4.1. STL vs MTL
+- The multi-task model **matched or slightly trailed** single-task fine-tuning on every dataset (by 0.00 to 0.02 macro-F1).
+- JNLPBA is the hardest corpus (0.71 macro-F1); its rare tags such as `S-RNA` and `S-DNA` score far lower than the frequent ones.
+- Earlier versions of this README reported "F1 = 0.98 / 0.99" for BC2GM and NCBI Disease. Those figures were token **accuracy** (dominated by the non-entity class), not F1.
 
 ---
 
@@ -82,8 +88,8 @@ We used publicly available biomedical corpora:
 ## 6. Takeaways and Future Work
 
 ### 6.1. Conclusions
-- **STL** is effective for datasets with abundant, unique information.  
-- **MTL** shows strong potential for improving accuracy across varied or limited datasets by enabling shared learning.
+- **STL** was the stronger or equal option on every dataset in these experiments.  
+- **MTL** did not improve results in these experiments and cost more GPU time. A plausible cause is that large corpora such as BC4CHEMD dominate the shared encoder; loss weighting or balanced sampling would be the next thing to try.
 
 ### 6.2. Suggested Enhancements
 - Incorporate **data augmentation** for minority classes  
