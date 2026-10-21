@@ -1,0 +1,10 @@
+# Versions the results in docs/RESULTS.md were produced and tested with.
+# Local CPU / CI: pip install -r requirements.txt  (CI adds the PyTorch CPU index)
+# Colab/Kaggle: use requirements-colab.txt (torch and numpy come preinstalled).
+torch==2.8.0
+transformers==4.57.0
+tokenizers==0.22.1
+seqeval==1.2.2
+PyYAML==6.0.3
+numpy==2.3.2
+tqdm==4.67.1

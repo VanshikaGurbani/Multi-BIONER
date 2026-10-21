@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bioner"
+version = "0.2.0"
+description = "Biomedical NER (BioBERT and newer encoders) with entity-level evaluation, multi-seed reporting and multi-task training"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "torch>=2.2",
+    "transformers>=4.44",
+    "seqeval>=1.2.2",
+    "PyYAML>=6.0",
+    "numpy>=1.26",
+    "tqdm>=4.66",
+]
+
+[project.optional-dependencies]
+llm = ["anthropic>=0.40"]
+dev = ["pytest>=8", "ruff>=0.6"]
+
+[project.scripts]
+bioner = "bioner.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["bioner*"]
+
+[tool.ruff]
+line-length = 100
+extend-exclude = ["notebooks/legacy"]
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "W"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
