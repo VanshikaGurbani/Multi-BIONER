@@ -1,0 +1,9 @@
+# Single-task baseline: one BioBERT v1.1 per corpus (the recipe every other config reuses).
+name: stl_biobert
+model_name: dmis-lab/biobert-base-cased-v1.1
+mode: stl
+seeds: [13, 42, 2024]
+epochs: 3
+batch_size: 16
+learning_rate: 5.0e-5
+max_len: 128

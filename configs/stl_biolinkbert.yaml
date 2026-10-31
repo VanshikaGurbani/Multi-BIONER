@@ -1,0 +1,9 @@
+# Newer encoder baseline, same recipe as stl_biobert.
+name: stl_biolinkbert
+model_name: michiyasunaga/BioLinkBERT-base
+mode: stl
+seeds: [13, 42, 2024]
+epochs: 3
+batch_size: 16
+learning_rate: 5.0e-5
+max_len: 128

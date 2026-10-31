@@ -1,0 +1,12 @@
+# Naive multi-task: ONE shared encoder, a head per corpus, corpus of each step drawn in proportion
+# to corpus size (what the thesis intended; BC4CHEMD dominates).
+name: mtl_proportional
+model_name: dmis-lab/biobert-base-cased-v1.1
+mode: mtl
+seeds: [13, 42, 2024]
+epochs: 3
+batch_size: 16
+learning_rate: 5.0e-5
+max_len: 128
+mtl:
+  sampling: proportional

@@ -380,3 +380,38 @@ def run_experiment(
             if device.type == "cuda":
                 torch.cuda.empty_cache()
     return written
+
+
+def evaluate_checkpoint(
+    run_dir: str | Path,
+    stem: str,
+    corpus: str,
+    split: str,
+    data_dir: str | Path,
+    device: torch.device,
+    tokenizer=None,
+    encoder_factory: Callable[[], nn.Module] | None = None,
+) -> dict:
+    """Re-score a saved checkpoint (``save_checkpoint: true``) on ``split`` of ``corpus``.
+
+    ``run_dir`` is ``results/<experiment>/seed<N>``; ``stem`` is the corpus name (STL) or ``all``.
+    """
+    from bioner.config import config_from_dict
+
+    run_dir = Path(run_dir)
+    cfg = config_from_dict(json.loads((run_dir.parent / "config.json").read_text("utf-8")))
+    state_path = run_dir / "checkpoint" / f"{stem}.pt"
+    if not state_path.exists():
+        raise FileNotFoundError(f"{state_path} missing; train with save_checkpoint: true")
+    if tokenizer is None:
+        from transformers import AutoTokenizer
+
+        tokenizer = AutoTokenizer.from_pretrained(cfg.model_name)
+    names = [stem] if cfg.mode == "stl" else cfg.corpora
+    data = build_corpus_data(names, data_dir, tokenizer, cfg.max_len)
+    encoder = encoder_factory() if encoder_factory else load_encoder(cfg.model_name, cfg.dropout)
+    num_labels = {c: len(data[c].corpus.label_to_id) for c in names}
+    model = build_tagger(num_labels, dropout=cfg.dropout, encoder=encoder).to(device)
+    model.load_state_dict(torch.load(state_path, map_location=device))
+    _, ent, tok = evaluate_split(model, corpus, data[corpus], split, cfg.eval_batch_size, device)
+    return {"entity": ent, "token": tok}

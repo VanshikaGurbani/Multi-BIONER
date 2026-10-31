@@ -22,7 +22,7 @@ from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from bioner.labels import IGNORE_INDEX, OUTSIDE, make_label_maps, validate_iobes
+from bioner.labels import IGNORE_INDEX, OUTSIDE, make_label_maps, split_tag, validate_iobes
 
 SPLITS = ("train", "devel", "test")
 
@@ -102,28 +102,71 @@ class Corpus:
     splits: dict[str, list[Sentence]]
     label_to_id: dict[str, int] = field(init=False)
     id_to_label: dict[int, str] = field(init=False)
+    joined_sentences: dict[str, int] = field(default_factory=dict)  # split -> repaired cuts
 
     def __post_init__(self) -> None:
         tags = (t for s in self.splits.values() for sent in s for t in sent.tags)
         self.label_to_id, self.id_to_label = make_label_maps(tags)
 
 
-def load_corpus(data_dir: str | Path, name: str, splits: Iterable[str] = SPLITS) -> Corpus:
+def merge_split_entities(sentences: list[Sentence]) -> tuple[list[Sentence], int]:
+    """Re-join sentences that the corpus splitter cut in the middle of an entity.
+
+    If sentence *i* ends inside an entity (last tag ``B-X``/``I-X``) and sentence *i+1* continues it
+    (first tag ``I-X``/``E-X``, same type), they are concatenated. Only segmentation changes, never
+    a tag. JNLPBA as distributed has ~20% of its sentences cut like this, which makes those gold
+    entities unscorable (strict seqeval drops malformed gold chunks). Returns the new list and the
+    number of joins.
+    """
+    out: list[Sentence] = []
+    joins = 0
+    for sent in sentences:
+        if out and sent.tags and out[-1].tags:
+            pre_last, type_last = split_tag(out[-1].tags[-1])
+            pre_first, type_first = split_tag(sent.tags[0])
+            if pre_last in {"B", "I"} and pre_first in {"I", "E"} and type_last == type_first:
+                prev = out.pop()
+                out.append(Sentence(prev.words + sent.words, prev.tags + sent.tags))
+                joins += 1
+                continue
+        out.append(sent)
+    return out, joins
+
+
+def load_corpus(
+    data_dir: str | Path, name: str, splits: Iterable[str] = SPLITS, repair: bool = True
+) -> Corpus:
+    """Load ``train/devel/test`` of a prepared corpus.
+
+    ``repair`` re-joins sentences cut inside an entity (see ``merge_split_entities``); it is a
+    no-op for corpora whose gold is already well formed.
+    """
     if name not in CORPORA:
         raise KeyError(f"unknown corpus {name!r}; known: {sorted(CORPORA)}")
     root = Path(data_dir) / name
     loaded = {}
+    joins = {}
     for split in splits:
         path = root / f"{split}.tsv"
         if not path.exists():
             raise FileNotFoundError(f"{path} missing - run `bioner prepare-data` first")
-        loaded[split] = read_conll(path)
-    return Corpus(name, loaded)
+        sents = read_conll(path)
+        joins[split] = 0
+        if repair:
+            sents, joins[split] = merge_split_entities(sents)
+        loaded[split] = sents
+    corpus = Corpus(name, loaded)
+    corpus.joined_sentences = joins
+    return corpus
 
 
 def corpus_stats(corpus: Corpus) -> dict:
     """Sentence/token/entity counts per split, malformed-gold count and train/test overlap."""
-    stats: dict = {"labels": len(corpus.label_to_id), "splits": {}}
+    stats: dict = {
+        "labels": len(corpus.label_to_id),
+        "sentences_rejoined": dict(corpus.joined_sentences),
+        "splits": {},
+    }
     for split, sents in corpus.splits.items():
         n_ent = sum(t.startswith(("B-", "S-")) for s in sents for t in s.tags)
         bad = sum(bool(validate_iobes(s.tags)) for s in sents)

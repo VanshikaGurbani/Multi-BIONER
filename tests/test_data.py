@@ -13,6 +13,7 @@ from bioner.data import (
     read_predictions,
     write_predictions,
 )
+from bioner.labels import validate_iobes
 
 SAMPLE = "the\tO\nIL-2\tS-protein\n\nkappaB\tB-protein\ngene\tE-protein\n"
 
@@ -94,3 +95,47 @@ def test_prediction_dump_round_trip(tmp_path):
     write_predictions(tmp_path / "p.jsonl.gz", sents, [["O", "O"]])
     (row,) = read_predictions(tmp_path / "p.jsonl.gz")
     assert row == {"words": ["a", "b"], "gold": ["O", "S-X"], "pred": ["O", "O"]}
+
+
+def _sent(pairs):
+    return Sentence(tuple(w for w, _ in pairs), tuple(t for _, t in pairs))
+
+
+def test_merge_split_entities_rejoins_cut_entity():
+    a = _sent([("x", "O"), ("IL", "B-protein")])
+    b = _sent([("2", "I-protein"), ("gene", "E-protein"), ("y", "O")])
+    out, joins = data.merge_split_entities([a, b])
+    assert joins == 1 and len(out) == 1
+    assert out[0].words == ("x", "IL", "2", "gene", "y")
+    assert validate_iobes(out[0].tags) == []
+
+
+def test_merge_chains_over_several_sentences():
+    parts = [
+        _sent([("a", "B-X")]),
+        _sent([("b", "I-X")]),
+        _sent([("c", "I-X")]),
+        _sent([("d", "E-X")]),
+    ]
+    out, joins = data.merge_split_entities(parts)
+    assert joins == 3 and out[0].tags == ("B-X", "I-X", "I-X", "E-X")
+
+
+def test_merge_leaves_well_formed_and_mismatched_types_alone():
+    ok = [_sent([("a", "S-X")]), _sent([("b", "E-X")])]  # E after S is not a continuation
+    assert data.merge_split_entities(ok) == (ok, 0)
+    diff = [_sent([("a", "B-X")]), _sent([("b", "E-Y")])]
+    assert data.merge_split_entities(diff)[1] == 0
+    clean = [_sent([("a", "B-X"), ("b", "E-X")]), _sent([("c", "I-X")])]
+    assert data.merge_split_entities(clean)[1] == 0  # first sentence ended closed
+
+
+def test_load_corpus_repairs_by_default(tmp_path):
+    d = tmp_path / "JNLPBA"
+    d.mkdir()
+    for split in ("train", "devel", "test"):
+        (d / f"{split}.tsv").write_text("a\tB-DNA\n\nb\tE-DNA\n\nc\tO\n", encoding="utf-8")
+    c = data.load_corpus(tmp_path, "JNLPBA")
+    assert len(c.splits["train"]) == 2 and c.joined_sentences["train"] == 1
+    raw = data.load_corpus(tmp_path, "JNLPBA", repair=False)
+    assert len(raw.splits["train"]) == 3
