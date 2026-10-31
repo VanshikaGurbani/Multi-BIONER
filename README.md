@@ -1,97 +1,114 @@
-# Biomedical Named Entity Recognition (BioNER) Using Multi-Task Learning
+# BioNER: biomedical named entity recognition, single-task vs multi-task
 
-## 1. Overview
-Biomedical Named Entity Recognition (BioNER) plays a crucial role in Natural Language Processing (NLP) by identifying key biomedical entities—such as diseases, chemicals, genes, and proteins—from scientific literature. The task is particularly challenging due to:
-- The variety of entity types and overlap between domains  
-- Context-dependent terminology (e.g., “cold” may refer to illness or temperature)
+Fine-tuning BioBERT (and newer biomedical encoders) for entity recognition on five corpora,
+evaluated with the standard **entity-level** protocol (seqeval, strict IOBES) over several seeds,
+and a **shared-encoder multi-task** model compared honestly against per-corpus single-task models.
 
-To address these complexities, we implemented:
-1. **Single-Task Learning (STL)** – Fine-tuned BioBERT separately on each dataset using the IOBES labeling scheme.  
-2. **Multi-Task Learning (MTL)** – Extended BioBERT with a shared encoder and task-specific classification heads to allow cross-dataset knowledge sharing.
+| Corpus | Entity types | Train / devel / test sentences |
+|:--|:--|:--|
+| BC2GM | gene / protein mentions | 12,574 / 2,519 / 5,038 |
+| BC4CHEMD | chemicals | 30,682 / 30,639 / 26,364 |
+| BC5CDR | chemicals, diseases | 4,560 / 4,581 / 4,797 |
+| JNLPBA | protein, DNA, RNA, cell type, cell line | 16,328 / 1,713 / 3,800 (after re-joining cut sentences, see below) |
+| NCBI-Disease | diseases | 5,424 / 923 / 940 |
 
-The problem was modeled as a **token-level classification task**, assigning entity labels to individual tokens within sentences.
+## Results
 
----
+Numbers in this section are written by `python -m bioner report` from result files that were actually
+produced by training runs. Nothing is typed in by hand.
 
-## 2. Datasets and Preprocessing
+<!-- RESULTS:START -->
+_No measured results are committed yet. They are produced by `notebooks/colab_run.ipynb` and written here by `bioner report`._
+<!-- RESULTS:END -->
 
-### 2.1. Data Sources
-We used publicly available biomedical corpora:
-- **BC2GM** – Gene mentions (~20k labeled tokens)  
-- **BC4CHEMD** – Chemical entities (~1.1M labeled tokens)  
-- **BC5CDR** – Chemical and disease mentions (~170k labeled tokens)  
-- **JNLPBA** – Biomedical terms like proteins and genes (~150k labeled tokens)  
-- **NCBI Disease** – Disease-specific references (~30k labeled tokens)
+For precision/recall, paired single-task vs multi-task differences, per-entity-type scores and the
+list of limitations see [docs/RESULTS.md](docs/RESULTS.md). Error analysis: [docs/ERROR_ANALYSIS.md](docs/ERROR_ANALYSIS.md).
+Model card: [docs/MODEL_CARD.md](docs/MODEL_CARD.md).
 
-### 2.2. Preprocessing Steps
-- Data followed the IOBES format for entity labeling.  
-- We used a custom script to align labels with tokens produced by BioBERT’s word-piece tokenizer.
+### What changed compared with the original thesis notebooks
 
-### 2.3. Data Notes
-- All datasets were heavily **imbalanced**, with a majority of tokens labeled as 'O'.  
-- True entity tags like B-GENE or I-CHEMICAL were significantly rarer.
+The first version of this repository (notebooks in [notebooks/legacy](notebooks/legacy)) reported token-level
+scores. A code audit ([docs/UPGRADE_PLAN.md](docs/UPGRADE_PLAN.md)) found problems that make those numbers
+unsuitable for comparison, so this version re-does the experiments:
 
----
+* The old "multi-task" notebook trained **five independent BioBERT copies** in a loop; no encoder was shared.
+  The new multi-task model has one shared encoder and one tagging head per corpus.
+* The old scores were sklearn **token-level** macro-F1 including the `O` class, measured on the **test** set at
+  every epoch (and used to pick the "best" model). The new protocol selects the epoch on the **devel** split and
+  scores the test split once, with entity-level precision / recall / F1.
+* Long sentences were silently truncated at 128 word-pieces; now they are split into windows, so every word is scored.
+* The old single-task and multi-task scores counted different things (first word-piece only vs all word-pieces).
+* Three seeds per configuration, reported as mean ± std.
 
-## 3. Model Setup and Experiments
+Old numbers, kept for history only (token-level macro-F1 incl. `O`, test-set selected, not comparable with entity F1):
 
-### 3.1. Baseline and Architecture
-- **Baseline**: A simple rule-based NER model using token matching.  
-- **Main Model**: BioBERT v1.1, a transformer model pre-trained on biomedical text (sourced from HuggingFace).
+| | BC2GM | BC4CHEMD | BC5CDR | JNLPBA | NCBI |
+|:--|:-:|:-:|:-:|:-:|:-:|
+| legacy single-task | 0.88 | 0.93 | 0.86 | 0.71 | 0.91 |
+| legacy "multi-task" (5 separate models) | 0.86 | 0.93 | 0.84 | 0.71 | 0.90 |
 
-### 3.2. Implementation
-- **STL**: BioBERT fine-tuned individually per dataset.  
-- **MTL**: BioBERT adapted to share encoder layers, with individual heads for each dataset.
+## Quick start
 
-### 3.3. Model Design
-- **Input**: Tokenized sentences and aligned IOBES labels.  
-- **Output**: IOBES-tagged predictions per token.  
-- **Architecture**: 12 transformer layers, 768 hidden dimensions.
+```bash
+pip install -r requirements.txt && pip install -e . --no-deps   # CPU is enough for tests
+python -m bioner prepare-data                                     # ~16 MB, checksum verified
+python -m pytest                                                  # fast, CPU only, no downloads
+```
 
-### 3.4. Training Configuration
-- **Epochs**: 3  
-- **Learning Rate**: 5e-5  
-- **Batch Size**: 8  
-- **Regularization**: Weight decay = 0.01, dropout = 0.1  
-- **Evaluation Metrics**: Precision, Recall, F1-score
+Training needs a GPU. Use [`notebooks/colab_run.ipynb`](notebooks/colab_run.ipynb) on Google Colab or Kaggle, or locally:
 
----
+```bash
+python -m bioner train --config configs/stl_biobert.yaml --seeds 13 42 2024
+python -m bioner train --config configs/mtl_temp2.yaml
+python -m bioner report          # rebuilds docs/RESULTS.md and the table above from results/
+```
 
-## 4. Key Results
+Experiments (one YAML each in [configs/](configs)):
 
-All metrics come from the token-level classification reports in the notebooks (scikit-learn style, over the IOBES tags **including the non-entity `O` class**). Overall token accuracy is inflated by the `O` class (roughly 81-93% of tokens, depending on the corpus), so the macro-F1 is the more informative number. These are token-level scores, not entity-level (span) F1.
+| Config | What |
+|:--|:--|
+| `stl_biobert` | one BioBERT v1.1 per corpus (baseline) |
+| `mtl_proportional` | shared encoder + head per corpus, corpus drawn in proportion to size |
+| `mtl_temp2` | same, temperature sampling `p ∝ n^(1/2)` (counters large-corpus dominance) |
+| `mtl_uniform` | same, uniform corpus sampling |
+| `mtl_pcgrad` | one batch per corpus per step, conflicting encoder gradients projected (PCGrad) |
+| `stl_pubmedbert`, `stl_biolinkbert` | newer biomedical encoders, same recipe as `stl_biobert` |
 
-| Dataset | STL macro-F1 | MTL macro-F1 | STL token accuracy | MTL token accuracy |
-|:---|:---:|:---:|:---:|:---:|
-| BC2GM | 0.88 | 0.86 | 0.98 | 0.96 |
-| BC4CHEMD | 0.93 | 0.93 | 0.99 | 0.98 |
-| BC5CDR | 0.86 | 0.84 | 0.97 | 0.96 |
-| JNLPBA | 0.71 | 0.71 | 0.93 | 0.90 |
-| NCBI Disease | 0.91 | 0.90 | 0.99 | 0.97 |
+Optional few-shot Claude baseline (costs money; prints an estimate and stops unless `--yes`):
 
-(STL = single-task learning, MTL = multi-task learning; final-epoch values.)
+```bash
+python -m bioner llm-baseline --model claude-haiku-5-5 --n 200     # dry run
+```
 
-### 4.1. STL vs MTL
-- The multi-task model **matched or slightly trailed** single-task fine-tuning on every dataset (by 0.00 to 0.02 macro-F1).
-- JNLPBA is the hardest corpus (0.71 macro-F1); its rare tags such as `S-RNA` and `S-DNA` score far lower than the frequent ones.
-- Earlier versions of this README reported "F1 = 0.98 / 0.99" for BC2GM and NCBI Disease. Those figures were token **accuracy** (dominated by the non-entity class), not F1.
+## Repository layout
 
----
+```
+bioner/        data.py (corpus I/O, word-piece alignment) labels.py metrics.py config.py models.py mtl.py
+               train.py report.py analysis.py baselines/llm.py cli.py
+configs/       one YAML per experiment
+tests/         CPU-only, offline, ~7 s (alignment, metrics, config, MTL, end-to-end smoke test on a tiny BERT)
+notebooks/     colab_run.ipynb (GPU runner) and legacy/ (the original notebooks)
+docs/          UPGRADE_PLAN.md  RESULTS.md (generated)  ERROR_ANALYSIS.md  MODEL_CARD.md
+```
 
-## 5. Challenges Encountered
-- Aligning word-piece tokens to original IOBES tags was non-trivial.  
-- Larger datasets risked overpowering smaller ones in MTL training.  
-- MTL incurred higher GPU and training time costs.
+## Evaluation protocol
 
----
+* Metric: seqeval entity-level P/R/F1, `mode="strict"`, IOBES. An entity counts only if type and both boundaries
+  are exactly right and the predicted tag run is a well-formed chunk.
+* Splits: `train` for fitting, `devel` for choosing the epoch, `test` evaluated once. Same splits for every model.
+* Seeds: 13, 42, 2024 (mean ± sample std; n=3 is a rough spread, not a confidence interval).
+* Word-piece alignment: each word is tokenized on its own, the first word-piece carries the label, the rest are ignored;
+  sentences longer than the window are split on word boundaries (see `tests/test_alignment.py`).
+* Same fixed recipe for every model (3 epochs, lr 5e-5, batch 16, 10% warm-up); no per-model tuning.
 
-## 6. Takeaways and Future Work
+## Limitations
 
-### 6.1. Conclusions
-- **STL** was the stronger or equal option on every dataset in these experiments.  
-- **MTL** did not improve results in these experiments and cost more GPU time. A plausible cause is that large corpora such as BC4CHEMD dominate the shared encoder; loss weighting or balanced sampling would be the next thing to try.
-
-### 6.2. Suggested Enhancements
-- Incorporate **data augmentation** for minority classes  
-- Explore **stronger regularization** techniques  
-- Conduct thorough **hyperparameter optimization**
+* JNLPBA as distributed has about 20% of its sentences cut in the middle of an entity. `bioner` re-joins adjacent
+  sentences (tags unchanged), so JNLPBA scores are on a re-segmented test set and differ from papers that score the raw files.
+* A few test sentences also occur in train (counts in [docs/RESULTS.md](docs/RESULTS.md)).
+* Provenance of the exact IOBES files is not recorded in the original repository; they look like the Crichton et al. corpora
+  as preprocessed for cross-type multi-task NER (Wang et al.).
+* No cross-dataset generalisation test (train on one corpus, test on another) has been run.
+* Words in a sentence that needs more than one window are tagged window by window, so an entity that straddles a window
+  boundary can be mis-tagged (affects well under 1% of sentences).
+* Results are for English abstracts only.

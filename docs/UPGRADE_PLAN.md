@@ -88,3 +88,11 @@ result files come back as a zip and are the only source of numbers. No number is
 5. baselines (PubMedBERT/BioLinkBERT, Claude few-shot)
 6. error analysis tooling, model card, Colab runner
 7. fill in measured results when the owner returns them
+
+## 9. Status (updated as work lands)
+
+* Done and tested on CPU: package, data preparation, alignment, metrics, config, STL/MTL training loop (sampling,
+  loss weights, PCGrad), report generator, error analysis, Claude baseline (mock-tested), CI.
+* Found while building: JNLPBA sentences cut inside entities (about 20%); fixed by re-joining adjacent sentences.
+* **Not done: all GPU training.** No model has been trained in this repository's new code on real data yet, so
+  `docs/RESULTS.md` and the README table are intentionally empty until result files from `notebooks/colab_run.ipynb` are added.
