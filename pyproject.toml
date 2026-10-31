@@ -18,7 +18,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-llm = ["anthropic>=0.40"]
+llm = ["anthropic>=1.0"]
 dev = ["pytest>=8", "ruff>=0.6"]
 
 [project.scripts]
@@ -29,15 +29,13 @@ include = ["bioner*"]
 
 [tool.ruff]
 line-length = 100
-extend-exclude = ["notebooks/legacy"]
+extend-exclude = ["notebooks"]
 target-version = "py310"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "W"]
+ignore = ["E501"]  # line length is handled by `ruff format`; long prose strings are fine
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"
-
-[tool.ruff.lint.per-file-ignores]
-"bioner/report.py" = ["E501"]  # generated-markdown prose

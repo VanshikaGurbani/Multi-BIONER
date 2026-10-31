@@ -78,6 +78,60 @@ def _cmd_report(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_error_analysis(args: argparse.Namespace) -> int:
+    from bioner.analysis import render_error_analysis
+
+    md = render_error_analysis(args.results_dir, args.experiment)
+    Path(args.out).parent.mkdir(parents=True, exist_ok=True)
+    Path(args.out).write_text(md, encoding="utf-8")
+    print(f"wrote {args.out}")
+    return 0
+
+
+def _cmd_llm(args: argparse.Namespace) -> int:
+    import os
+
+    from bioner.baselines import llm
+
+    if args.model not in llm.PRICES:
+        print(f"unknown model {args.model!r}; priced models: {sorted(llm.PRICES)}", file=sys.stderr)
+        return 2
+    corpora = args.corpora or ["BC2GM", "BC5CDR", "NCBI", "JNLPBA"]
+    loaded = {c: load_corpus(args.data_dir, c) for c in corpora}
+    total = 0.0
+    for c, corpus in loaded.items():
+        est = llm.estimate_cost(corpus, args.model, args.n, args.shots, args.batch)
+        total += est["approx_usd_without_caching"]
+        print(f"{c}: {est}")
+    print(f"estimated total (no caching, rough): ${total:.2f}")
+    if not args.yes:
+        print("Dry run only. Re-run with --yes to call the API and spend money.")
+        return 0
+    if not os.environ.get("ANTHROPIC_API_KEY"):
+        print(
+            "ANTHROPIC_API_KEY is not set (put it in the environment, never in a file).",
+            file=sys.stderr,
+        )
+        return 2
+    import anthropic
+
+    client = anthropic.Anthropic()
+    out_dir = Path(args.out_dir) / "llm" / args.model
+    out_dir.mkdir(parents=True, exist_ok=True)
+    for c, corpus in loaded.items():
+        dest = out_dir / f"{c}.json"
+        if dest.exists():
+            print(f"skip {dest} (exists)")
+            continue
+        run = llm.run_corpus(client, args.model, corpus, args.n, args.shots, args.batch, args.seed)
+        ft = Path(args.out_dir) / args.finetuned / f"seed{args.seed}" / f"predictions_{c}.jsonl.gz"
+        res = llm.score_run(run, corpus, ft)
+        dest.write_text(json.dumps(res, indent=2), encoding="utf-8")
+        f1 = res["llm_entity"]["overall"]["f1"]
+        print(f"{c}: LLM entity F1={f1:.4f} cost=${res['cost_usd']} -> {dest}")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="bioner", description=__doc__)
     sub = p.add_subparsers(dest="command", required=True)
@@ -114,6 +168,29 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--readme", default="README.md", help="'' to skip")
     s.add_argument("--legacy", default="docs/legacy_results.json")
     s.set_defaults(func=_cmd_report)
+
+    s = sub.add_parser("error-analysis", help="error buckets from saved test predictions")
+    s.add_argument("--results-dir", default="results")
+    s.add_argument("--experiment", default="stl_biobert")
+    s.add_argument("--out", default="docs/ERROR_ANALYSIS.md")
+    s.set_defaults(func=_cmd_error_analysis)
+
+    s = sub.add_parser("llm-baseline", help="few-shot Claude baseline (dry run unless --yes)")
+    s.add_argument(
+        "--model", required=True, help="claude-haiku-5-5 | claude-sonnet-5-5 | claude-opus-5-5"
+    )
+    s.add_argument("--corpora", nargs="+", choices=sorted(CORPORA))
+    s.add_argument("--n", type=int, default=200, help="test sentences per corpus")
+    s.add_argument("--shots", type=int, default=12)
+    s.add_argument("--batch", type=int, default=10, help="sentences per request")
+    s.add_argument("--seed", type=int, default=13)
+    s.add_argument(
+        "--finetuned", default="stl_biobert", help="experiment to compare on the same subset"
+    )
+    s.add_argument("--data-dir", default="data")
+    s.add_argument("--out-dir", default="results")
+    s.add_argument("--yes", action="store_true", help="actually call the API (costs money)")
+    s.set_defaults(func=_cmd_llm)
     return p
 
 
