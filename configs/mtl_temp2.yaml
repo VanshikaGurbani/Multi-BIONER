@@ -1,0 +1,12 @@
+# Temperature sampling p_i ~ n_i^(1/2): flattens corpus dominance.
+name: mtl_temp2
+model_name: dmis-lab/biobert-base-cased-v1.1
+mode: mtl
+seeds: [13, 42, 2024]
+epochs: 3
+batch_size: 16
+learning_rate: 5.0e-5
+max_len: 128
+mtl:
+  sampling: temperature
+  temperature: 2.0

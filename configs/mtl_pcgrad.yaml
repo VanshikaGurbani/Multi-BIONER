@@ -1,0 +1,12 @@
+# Sampling is replaced by one batch per corpus per step; conflicting encoder
+# gradients are projected (PCGrad). fp32, ~3x slower per step than the other MTL configs.
+name: mtl_pcgrad
+model_name: dmis-lab/biobert-base-cased-v1.1
+mode: mtl
+seeds: [13, 42, 2024]
+epochs: 3
+batch_size: 16
+learning_rate: 5.0e-5
+max_len: 128
+mtl:
+  pcgrad: true

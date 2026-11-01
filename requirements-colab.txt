@@ -1,0 +1,6 @@
+# Colab / Kaggle: torch and numpy are preinstalled there, do not reinstall them.
+transformers==4.57.0
+tokenizers==0.22.1
+seqeval==1.2.2
+PyYAML==6.0.3
+tqdm==4.67.1

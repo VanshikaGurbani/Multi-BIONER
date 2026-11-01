@@ -1,0 +1,5 @@
+{
+  "note": "Token-level macro-F1 (sklearn classification_report over IOBES tags including O), copied from the saved outputs of the original notebooks at commit 7371a37. Evaluated on the test split during training; 'MTL' = five independent BioBERT copies scored on all word-pieces. Not comparable with entity-level F1.",
+  "stl_macro_f1": {"BC2GM": 0.88, "BC4CHEMD": 0.93, "BC5CDR": 0.86, "JNLPBA": 0.71, "NCBI": 0.91},
+  "mtl_macro_f1": {"BC2GM": 0.86, "BC4CHEMD": 0.93, "BC5CDR": 0.84, "JNLPBA": 0.71, "NCBI": 0.90}
+}
