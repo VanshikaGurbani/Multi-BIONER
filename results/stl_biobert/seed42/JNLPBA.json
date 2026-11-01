@@ -1,0 +1,305 @@
+{
+  "experiment": "stl_biobert",
+  "mode": "stl",
+  "model_name": "dmis-lab/biobert-base-cased-v1.1",
+  "seed": 42,
+  "best_epoch": 3,
+  "train_seconds": 367.7,
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.37426835325481,
+      "dev_entity_f1": {
+        "JNLPBA": 0.7974892632969938
+      }
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.13966163284465916,
+      "dev_entity_f1": {
+        "JNLPBA": 0.8036253776435045
+      }
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.09689339774812544,
+      "dev_entity_f1": {
+        "JNLPBA": 0.8098132390319372
+      }
+    }
+  ],
+  "corpora": {
+    "JNLPBA": {
+      "dev_entity": {
+        "level": "entity",
+        "overall": {
+          "precision": 0.8145842596709649,
+          "recall": 0.8050977807075368,
+          "f1": 0.8098132390319372,
+          "support": 4551
+        },
+        "macro": {
+          "precision": 0.81592637749201,
+          "recall": 0.7859969069988277,
+          "f1": 0.7996524855983158,
+          "support": 4551
+        },
+        "per_type": {
+          "DNA": {
+            "precision": 0.7642045454545454,
+            "recall": 0.7671102661596958,
+            "f1": 0.7656546489563567,
+            "support": 1052
+          },
+          "RNA": {
+            "precision": 0.8725490196078431,
+            "recall": 0.8317757009345794,
+            "f1": 0.8516746411483254,
+            "support": 107
+          },
+          "cell_line": {
+            "precision": 0.8208955223880597,
+            "recall": 0.6875,
+            "f1": 0.7482993197278912,
+            "support": 400
+          },
+          "cell_type": {
+            "precision": 0.7818853974121996,
+            "recall": 0.8041825095057035,
+            "f1": 0.7928772258669166,
+            "support": 526
+          },
+          "protein": {
+            "precision": 0.8400974025974026,
+            "recall": 0.8394160583941606,
+            "f1": 0.8397565922920892,
+            "support": 2466
+          }
+        }
+      },
+      "test_entity": {
+        "level": "entity",
+        "overall": {
+          "precision": 0.7244212098581031,
+          "recall": 0.7838836296467329,
+          "f1": 0.7529803160521209,
+          "support": 8662
+        },
+        "macro": {
+          "precision": 0.7203834844838565,
+          "recall": 0.7431920398378089,
+          "f1": 0.7296866093069776,
+          "support": 8662
+        },
+        "per_type": {
+          "DNA": {
+            "precision": 0.7366515837104073,
+            "recall": 0.7708333333333334,
+            "f1": 0.7533549282739472,
+            "support": 1056
+          },
+          "RNA": {
+            "precision": 0.7288135593220338,
+            "recall": 0.7288135593220338,
+            "f1": 0.7288135593220338,
+            "support": 118
+          },
+          "cell_line": {
+            "precision": 0.6108108108108108,
+            "recall": 0.678,
+            "f1": 0.642654028436019,
+            "support": 500
+          },
+          "cell_type": {
+            "precision": 0.8198683423099941,
+            "recall": 0.7131702238417491,
+            "f1": 0.7628062360801782,
+            "support": 1921
+          },
+          "protein": {
+            "precision": 0.7057731262660365,
+            "recall": 0.8251430826919282,
+            "f1": 0.7608042944227095,
+            "support": 5067
+          }
+        }
+      },
+      "test_token": {
+        "level": "token",
+        "accuracy": 0.9375488672690743,
+        "macro_f1": 0.7326298061163738,
+        "non_o_macro_f1": 0.7205514097742635,
+        "per_tag": {
+          "B-DNA": {
+            "precision": 0.7717842323651453,
+            "recall": 0.8752941176470588,
+            "f1": 0.8202866593164277,
+            "support": 850
+          },
+          "B-RNA": {
+            "precision": 0.8148148148148148,
+            "recall": 0.8627450980392157,
+            "f1": 0.838095238095238,
+            "support": 102
+          },
+          "B-cell_line": {
+            "precision": 0.6395348837209303,
+            "recall": 0.7746478873239436,
+            "f1": 0.7006369426751592,
+            "support": 426
+          },
+          "B-cell_type": {
+            "precision": 0.8238805970149253,
+            "recall": 0.7566826593557231,
+            "f1": 0.7888531618435155,
+            "support": 1459
+          },
+          "B-protein": {
+            "precision": 0.7666796722590714,
+            "recall": 0.8329800763035184,
+            "f1": 0.7984559122308006,
+            "support": 2359
+          },
+          "E-DNA": {
+            "precision": 0.813735691987513,
+            "recall": 0.92,
+            "f1": 0.8636112644947542,
+            "support": 850
+          },
+          "E-RNA": {
+            "precision": 0.8141592920353983,
+            "recall": 0.9019607843137255,
+            "f1": 0.8558139534883722,
+            "support": 102
+          },
+          "E-cell_line": {
+            "precision": 0.6653992395437263,
+            "recall": 0.8215962441314554,
+            "f1": 0.7352941176470589,
+            "support": 426
+          },
+          "E-cell_type": {
+            "precision": 0.8886380737396539,
+            "recall": 0.8094585332419465,
+            "f1": 0.8472022955523673,
+            "support": 1459
+          },
+          "E-protein": {
+            "precision": 0.7821859198755348,
+            "recall": 0.8524798643493006,
+            "f1": 0.8158215010141988,
+            "support": 2359
+          },
+          "I-DNA": {
+            "precision": 0.8232971372161896,
+            "recall": 0.8881789137380192,
+            "f1": 0.8545081967213115,
+            "support": 939
+          },
+          "I-RNA": {
+            "precision": 0.7777777777777778,
+            "recall": 0.6588235294117647,
+            "f1": 0.7133757961783439,
+            "support": 85
+          },
+          "I-cell_line": {
+            "precision": 0.5438144329896907,
+            "recall": 0.7495559502664298,
+            "f1": 0.6303211351755041,
+            "support": 563
+          },
+          "I-cell_type": {
+            "precision": 0.8533333333333334,
+            "recall": 0.7519582245430809,
+            "f1": 0.7994448299791812,
+            "support": 1532
+          },
+          "I-protein": {
+            "precision": 0.7859490550534101,
+            "recall": 0.7921325051759834,
+            "f1": 0.7890286657042689,
+            "support": 2415
+          },
+          "O": {
+            "precision": 0.9827513148383559,
+            "recall": 0.9657917620978113,
+            "f1": 0.9741977329585817,
+            "support": 81647
+          },
+          "S-DNA": {
+            "precision": 0.5053763440860215,
+            "recall": 0.4563106796116505,
+            "f1": 0.47959183673469385,
+            "support": 206
+          },
+          "S-RNA": {
+            "precision": 0.21428571428571427,
+            "recall": 0.1875,
+            "f1": 0.19999999999999998,
+            "support": 16
+          },
+          "S-cell_line": {
+            "precision": 0.36363636363636365,
+            "recall": 0.3783783783783784,
+            "f1": 0.3708609271523179,
+            "support": 74
+          },
+          "S-cell_type": {
+            "precision": 0.7894736842105263,
+            "recall": 0.6818181818181818,
+            "f1": 0.7317073170731707,
+            "support": 462
+          },
+          "S-protein": {
+            "precision": 0.6910289481226712,
+            "recall": 0.8903249630723782,
+            "f1": 0.7781184444085849,
+            "support": 2708
+          }
+        }
+      },
+      "n_train_sentences": 16328
+    }
+  },
+  "config": {
+    "name": "stl_biobert",
+    "model_name": "dmis-lab/biobert-base-cased-v1.1",
+    "mode": "stl",
+    "corpora": [
+      "BC2GM",
+      "BC4CHEMD",
+      "BC5CDR",
+      "JNLPBA",
+      "NCBI"
+    ],
+    "seeds": [
+      13,
+      42,
+      2024
+    ],
+    "epochs": 3,
+    "batch_size": 16,
+    "eval_batch_size": 64,
+    "learning_rate": 5e-05,
+    "weight_decay": 0.01,
+    "warmup_ratio": 0.1,
+    "max_len": 128,
+    "dropout": 0.1,
+    "max_grad_norm": 1.0,
+    "fp16": true,
+    "save_checkpoint": false,
+    "mtl": {
+      "sampling": "proportional",
+      "temperature": 1.0,
+      "loss_weights": {},
+      "pcgrad": false
+    }
+  },
+  "env": {
+    "torch": "2.11.0+cu130",
+    "transformers": "4.57.0",
+    "device": "cuda",
+    "git_commit": "701a8db5bae75daae7bfeea8a0b25cc34b2801aa",
+    "gpu": "Tesla T4"
+  }
+}

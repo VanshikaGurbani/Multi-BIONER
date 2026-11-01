@@ -1,0 +1,197 @@
+{
+  "experiment": "stl_biobert",
+  "mode": "stl",
+  "model_name": "dmis-lab/biobert-base-cased-v1.1",
+  "seed": 2024,
+  "best_epoch": 3,
+  "train_seconds": 101.8,
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.34609344720723634,
+      "dev_entity_f1": {
+        "BC5CDR": 0.8917251648585408
+      }
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.04422477571470566,
+      "dev_entity_f1": {
+        "BC5CDR": 0.8974385781495035
+      }
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.016573436130714384,
+      "dev_entity_f1": {
+        "BC5CDR": 0.9004977731202515
+      }
+    }
+  ],
+  "corpora": {
+    "BC5CDR": {
+      "dev_entity": {
+        "level": "entity",
+        "overall": {
+          "precision": 0.9052886641382216,
+          "recall": 0.8957573230480559,
+          "f1": 0.9004977731202515,
+          "support": 9593
+        },
+        "macro": {
+          "precision": 0.9003742265603119,
+          "recall": 0.8900983035023624,
+          "f1": 0.8951720866615496,
+          "support": 9593
+        },
+        "per_type": {
+          "Chemical": {
+            "precision": 0.9390540287904281,
+            "recall": 0.9394052739854124,
+            "f1": 0.9392296185489902,
+            "support": 5347
+          },
+          "Disease": {
+            "precision": 0.8616944243301955,
+            "recall": 0.8407913330193123,
+            "f1": 0.851114554774109,
+            "support": 4246
+          }
+        }
+      },
+      "test_entity": {
+        "level": "entity",
+        "overall": {
+          "precision": 0.8892498223530606,
+          "recall": 0.8930573962687328,
+          "f1": 0.8911495422177008,
+          "support": 9809
+        },
+        "macro": {
+          "precision": 0.8854656068238604,
+          "recall": 0.8895300555256128,
+          "f1": 0.8874853294621827,
+          "support": 9809
+        },
+        "per_type": {
+          "Chemical": {
+            "precision": 0.9265662762595278,
+            "recall": 0.9255338904363974,
+            "f1": 0.9260497956150131,
+            "support": 5385
+          },
+          "Disease": {
+            "precision": 0.8443649373881932,
+            "recall": 0.8535262206148282,
+            "f1": 0.8489208633093525,
+            "support": 4424
+          }
+        }
+      },
+      "test_token": {
+        "level": "token",
+        "accuracy": 0.9735150300601202,
+        "macro_f1": 0.8548966433378998,
+        "non_o_macro_f1": 0.8382983910282192,
+        "per_tag": {
+          "B-Chemical": {
+            "precision": 0.8250728862973761,
+            "recall": 0.8788819875776398,
+            "f1": 0.8511278195488723,
+            "support": 644
+          },
+          "B-Disease": {
+            "precision": 0.7475973697521497,
+            "recall": 0.8407281001137656,
+            "f1": 0.7914323962516735,
+            "support": 1758
+          },
+          "E-Chemical": {
+            "precision": 0.8037790697674418,
+            "recall": 0.8586956521739131,
+            "f1": 0.8303303303303303,
+            "support": 644
+          },
+          "E-Disease": {
+            "precision": 0.8002054442732409,
+            "recall": 0.8862343572241184,
+            "f1": 0.841025641025641,
+            "support": 1758
+          },
+          "I-Chemical": {
+            "precision": 0.7953321364452424,
+            "recall": 0.9004065040650406,
+            "f1": 0.8446139180171592,
+            "support": 984
+          },
+          "I-Disease": {
+            "precision": 0.6807174887892377,
+            "recall": 0.7752808988764045,
+            "f1": 0.7249283667621776,
+            "support": 979
+          },
+          "O": {
+            "precision": 0.9909690928125996,
+            "recall": 0.9844179568803357,
+            "f1": 0.9876826618153443,
+            "support": 110576
+          },
+          "S-Chemical": {
+            "precision": 0.9383445945945946,
+            "recall": 0.9373549883990719,
+            "f1": 0.9378495304421229,
+            "support": 4741
+          },
+          "S-Disease": {
+            "precision": 0.8890991672975019,
+            "recall": 0.8810952738184546,
+            "f1": 0.8850791258477769,
+            "support": 2666
+          }
+        }
+      },
+      "n_train_sentences": 4560
+    }
+  },
+  "config": {
+    "name": "stl_biobert",
+    "model_name": "dmis-lab/biobert-base-cased-v1.1",
+    "mode": "stl",
+    "corpora": [
+      "BC2GM",
+      "BC4CHEMD",
+      "BC5CDR",
+      "JNLPBA",
+      "NCBI"
+    ],
+    "seeds": [
+      13,
+      42,
+      2024
+    ],
+    "epochs": 3,
+    "batch_size": 16,
+    "eval_batch_size": 64,
+    "learning_rate": 5e-05,
+    "weight_decay": 0.01,
+    "warmup_ratio": 0.1,
+    "max_len": 128,
+    "dropout": 0.1,
+    "max_grad_norm": 1.0,
+    "fp16": true,
+    "save_checkpoint": false,
+    "mtl": {
+      "sampling": "proportional",
+      "temperature": 1.0,
+      "loss_weights": {},
+      "pcgrad": false
+    }
+  },
+  "env": {
+    "torch": "2.11.0+cu130",
+    "transformers": "4.57.0",
+    "device": "cuda",
+    "git_commit": "701a8db5bae75daae7bfeea8a0b25cc34b2801aa",
+    "gpu": "Tesla T4"
+  }
+}
