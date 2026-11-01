@@ -1,0 +1,161 @@
+{
+  "experiment": "stl_biobert",
+  "mode": "stl",
+  "model_name": "dmis-lab/biobert-base-cased-v1.1",
+  "seed": 42,
+  "best_epoch": 3,
+  "train_seconds": 104.9,
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.18828574195504189,
+      "dev_entity_f1": {
+        "NCBI": 0.7946084724005135
+      }
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.023761775373885245,
+      "dev_entity_f1": {
+        "NCBI": 0.8622222222222223
+      }
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.00829166895324734,
+      "dev_entity_f1": {
+        "NCBI": 0.8651044965167827
+      }
+    }
+  ],
+  "corpora": {
+    "NCBI": {
+      "dev_entity": {
+        "level": "entity",
+        "overall": {
+          "precision": 0.8623737373737373,
+          "recall": 0.8678526048284625,
+          "f1": 0.8651044965167827,
+          "support": 787
+        },
+        "macro": {
+          "precision": 0.8623737373737373,
+          "recall": 0.8678526048284625,
+          "f1": 0.8651044965167827,
+          "support": 787
+        },
+        "per_type": {
+          "Disease": {
+            "precision": 0.8623737373737373,
+            "recall": 0.8678526048284625,
+            "f1": 0.8651044965167827,
+            "support": 787
+          }
+        }
+      },
+      "test_entity": {
+        "level": "entity",
+        "overall": {
+          "precision": 0.8746208291203236,
+          "recall": 0.9010416666666666,
+          "f1": 0.8876346844535659,
+          "support": 960
+        },
+        "macro": {
+          "precision": 0.8746208291203236,
+          "recall": 0.9010416666666666,
+          "f1": 0.8876346844535659,
+          "support": 960
+        },
+        "per_type": {
+          "Disease": {
+            "precision": 0.8746208291203236,
+            "recall": 0.9010416666666666,
+            "f1": 0.8876346844535659,
+            "support": 960
+          }
+        }
+      },
+      "test_token": {
+        "level": "token",
+        "accuracy": 0.9848961097277218,
+        "macro_f1": 0.9172550218327642,
+        "non_o_macro_f1": 0.89826041846204,
+        "per_tag": {
+          "B-Disease": {
+            "precision": 0.8489583333333334,
+            "recall": 0.9106145251396648,
+            "f1": 0.8787061994609164,
+            "support": 537
+          },
+          "E-Disease": {
+            "precision": 0.9037433155080213,
+            "recall": 0.9441340782122905,
+            "f1": 0.9234972677595626,
+            "support": 537
+          },
+          "I-Disease": {
+            "precision": 0.8355932203389831,
+            "recall": 0.8963636363636364,
+            "f1": 0.8649122807017545,
+            "support": 550
+          },
+          "O": {
+            "precision": 0.9959245823816562,
+            "recall": 0.9905567928730512,
+            "f1": 0.9932334353156614,
+            "support": 22450
+          },
+          "S-Disease": {
+            "precision": 0.9070294784580499,
+            "recall": 0.9456264775413712,
+            "f1": 0.925925925925926,
+            "support": 423
+          }
+        }
+      },
+      "n_train_sentences": 5424
+    }
+  },
+  "config": {
+    "name": "stl_biobert",
+    "model_name": "dmis-lab/biobert-base-cased-v1.1",
+    "mode": "stl",
+    "corpora": [
+      "BC2GM",
+      "BC4CHEMD",
+      "BC5CDR",
+      "JNLPBA",
+      "NCBI"
+    ],
+    "seeds": [
+      13,
+      42,
+      2024
+    ],
+    "epochs": 3,
+    "batch_size": 16,
+    "eval_batch_size": 64,
+    "learning_rate": 5e-05,
+    "weight_decay": 0.01,
+    "warmup_ratio": 0.1,
+    "max_len": 128,
+    "dropout": 0.1,
+    "max_grad_norm": 1.0,
+    "fp16": true,
+    "save_checkpoint": false,
+    "mtl": {
+      "sampling": "proportional",
+      "temperature": 1.0,
+      "loss_weights": {},
+      "pcgrad": false
+    }
+  },
+  "env": {
+    "torch": "2.11.0+cu130",
+    "transformers": "4.57.0",
+    "device": "cuda",
+    "git_commit": "701a8db5bae75daae7bfeea8a0b25cc34b2801aa",
+    "gpu": "Tesla T4"
+  }
+}

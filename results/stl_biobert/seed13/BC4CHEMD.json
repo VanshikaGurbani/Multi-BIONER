@@ -1,0 +1,161 @@
+{
+  "experiment": "stl_biobert",
+  "mode": "stl",
+  "model_name": "dmis-lab/biobert-base-cased-v1.1",
+  "seed": 13,
+  "best_epoch": 3,
+  "train_seconds": 705.0,
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.09790198872657926,
+      "dev_entity_f1": {
+        "BC4CHEMD": 0.8837407957904088
+      }
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.01570090691632025,
+      "dev_entity_f1": {
+        "BC4CHEMD": 0.8905903351181838
+      }
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.0063307910930593255,
+      "dev_entity_f1": {
+        "BC4CHEMD": 0.895156782029781
+      }
+    }
+  ],
+  "corpora": {
+    "BC4CHEMD": {
+      "dev_entity": {
+        "level": "entity",
+        "overall": {
+          "precision": 0.894262988661364,
+          "recall": 0.8960523638336838,
+          "f1": 0.895156782029781,
+          "support": 29486
+        },
+        "macro": {
+          "precision": 0.894262988661364,
+          "recall": 0.8960523638336838,
+          "f1": 0.895156782029781,
+          "support": 29486
+        },
+        "per_type": {
+          "Chemical": {
+            "precision": 0.894262988661364,
+            "recall": 0.8960523638336838,
+            "f1": 0.895156782029781,
+            "support": 29486
+          }
+        }
+      },
+      "test_entity": {
+        "level": "entity",
+        "overall": {
+          "precision": 0.9154226837579101,
+          "recall": 0.8903574528525211,
+          "f1": 0.9027161086443457,
+          "support": 25346
+        },
+        "macro": {
+          "precision": 0.9154226837579101,
+          "recall": 0.8903574528525211,
+          "f1": 0.9027161086443457,
+          "support": 25346
+        },
+        "per_type": {
+          "Chemical": {
+            "precision": 0.9154226837579101,
+            "recall": 0.8903574528525211,
+            "f1": 0.9027161086443457,
+            "support": 25346
+          }
+        }
+      },
+      "test_token": {
+        "level": "token",
+        "accuracy": 0.9910526047833449,
+        "macro_f1": 0.9340536056383497,
+        "non_o_macro_f1": 0.9185595457976896,
+        "per_tag": {
+          "B-Chemical": {
+            "precision": 0.932656023222061,
+            "recall": 0.8839064649243467,
+            "f1": 0.9076271186440679,
+            "support": 7270
+          },
+          "E-Chemical": {
+            "precision": 0.9267098632109432,
+            "recall": 0.8852819807427785,
+            "f1": 0.9055223355610271,
+            "support": 7270
+          },
+          "I-Chemical": {
+            "precision": 0.9596825979267957,
+            "recall": 0.9405286343612335,
+            "f1": 0.9500090810025427,
+            "support": 22246
+          },
+          "O": {
+            "precision": 0.9951351040282068,
+            "recall": 0.9969261963718993,
+            "f1": 0.9960298450009903,
+            "support": 711171
+          },
+          "S-Chemical": {
+            "precision": 0.9144051267762608,
+            "recall": 0.9077782695286568,
+            "f1": 0.9110796479831209,
+            "support": 18076
+          }
+        }
+      },
+      "n_train_sentences": 30682
+    }
+  },
+  "config": {
+    "name": "stl_biobert",
+    "model_name": "dmis-lab/biobert-base-cased-v1.1",
+    "mode": "stl",
+    "corpora": [
+      "BC2GM",
+      "BC4CHEMD",
+      "BC5CDR",
+      "JNLPBA",
+      "NCBI"
+    ],
+    "seeds": [
+      13,
+      42,
+      2024
+    ],
+    "epochs": 3,
+    "batch_size": 16,
+    "eval_batch_size": 64,
+    "learning_rate": 5e-05,
+    "weight_decay": 0.01,
+    "warmup_ratio": 0.1,
+    "max_len": 128,
+    "dropout": 0.1,
+    "max_grad_norm": 1.0,
+    "fp16": true,
+    "save_checkpoint": false,
+    "mtl": {
+      "sampling": "proportional",
+      "temperature": 1.0,
+      "loss_weights": {},
+      "pcgrad": false
+    }
+  },
+  "env": {
+    "torch": "2.11.0+cu130",
+    "transformers": "4.57.0",
+    "device": "cuda",
+    "git_commit": "701a8db5bae75daae7bfeea8a0b25cc34b2801aa",
+    "gpu": "Tesla T4"
+  }
+}

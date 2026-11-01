@@ -1,0 +1,34 @@
+{
+  "name": "stl_biobert",
+  "model_name": "dmis-lab/biobert-base-cased-v1.1",
+  "mode": "stl",
+  "corpora": [
+    "BC2GM",
+    "BC4CHEMD",
+    "BC5CDR",
+    "JNLPBA",
+    "NCBI"
+  ],
+  "seeds": [
+    13,
+    42,
+    2024
+  ],
+  "epochs": 3,
+  "batch_size": 16,
+  "eval_batch_size": 64,
+  "learning_rate": 5e-05,
+  "weight_decay": 0.01,
+  "warmup_ratio": 0.1,
+  "max_len": 128,
+  "dropout": 0.1,
+  "max_grad_norm": 1.0,
+  "fp16": true,
+  "save_checkpoint": false,
+  "mtl": {
+    "sampling": "proportional",
+    "temperature": 1.0,
+    "loss_weights": {},
+    "pcgrad": false
+  }
+}

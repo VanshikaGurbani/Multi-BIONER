@@ -1,0 +1,161 @@
+{
+  "experiment": "stl_biobert",
+  "mode": "stl",
+  "model_name": "dmis-lab/biobert-base-cased-v1.1",
+  "seed": 13,
+  "best_epoch": 3,
+  "train_seconds": 105.1,
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.20502092775970918,
+      "dev_entity_f1": {
+        "NCBI": 0.8307493540051679
+      }
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.024117474137764314,
+      "dev_entity_f1": {
+        "NCBI": 0.8616953473550032
+      }
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.008795797097863054,
+      "dev_entity_f1": {
+        "NCBI": 0.8642131979695432
+      }
+    }
+  ],
+  "corpora": {
+    "NCBI": {
+      "dev_entity": {
+        "level": "entity",
+        "overall": {
+          "precision": 0.8631178707224335,
+          "recall": 0.8653113087674714,
+          "f1": 0.8642131979695432,
+          "support": 787
+        },
+        "macro": {
+          "precision": 0.8631178707224335,
+          "recall": 0.8653113087674714,
+          "f1": 0.8642131979695432,
+          "support": 787
+        },
+        "per_type": {
+          "Disease": {
+            "precision": 0.8631178707224335,
+            "recall": 0.8653113087674714,
+            "f1": 0.8642131979695432,
+            "support": 787
+          }
+        }
+      },
+      "test_entity": {
+        "level": "entity",
+        "overall": {
+          "precision": 0.8919202518363064,
+          "recall": 0.8854166666666666,
+          "f1": 0.8886565603763722,
+          "support": 960
+        },
+        "macro": {
+          "precision": 0.8919202518363064,
+          "recall": 0.8854166666666666,
+          "f1": 0.8886565603763722,
+          "support": 960
+        },
+        "per_type": {
+          "Disease": {
+            "precision": 0.8919202518363064,
+            "recall": 0.8854166666666666,
+            "f1": 0.8886565603763722,
+            "support": 960
+          }
+        }
+      },
+      "test_token": {
+        "level": "token",
+        "accuracy": 0.9854267869535045,
+        "macro_f1": 0.9183396625818402,
+        "non_o_macro_f1": 0.899541798838498,
+        "per_tag": {
+          "B-Disease": {
+            "precision": 0.8612612612612612,
+            "recall": 0.8901303538175046,
+            "f1": 0.8754578754578753,
+            "support": 537
+          },
+          "E-Disease": {
+            "precision": 0.9207207207207208,
+            "recall": 0.9515828677839852,
+            "f1": 0.9358974358974359,
+            "support": 537
+          },
+          "I-Disease": {
+            "precision": 0.8418367346938775,
+            "recall": 0.9,
+            "f1": 0.8699472759226714,
+            "support": 550
+          },
+          "O": {
+            "precision": 0.9950848972296693,
+            "recall": 0.9919821826280624,
+            "f1": 0.9935311175552086,
+            "support": 22450
+          },
+          "S-Disease": {
+            "precision": 0.9212410501193318,
+            "recall": 0.9125295508274232,
+            "f1": 0.9168646080760096,
+            "support": 423
+          }
+        }
+      },
+      "n_train_sentences": 5424
+    }
+  },
+  "config": {
+    "name": "stl_biobert",
+    "model_name": "dmis-lab/biobert-base-cased-v1.1",
+    "mode": "stl",
+    "corpora": [
+      "BC2GM",
+      "BC4CHEMD",
+      "BC5CDR",
+      "JNLPBA",
+      "NCBI"
+    ],
+    "seeds": [
+      13,
+      42,
+      2024
+    ],
+    "epochs": 3,
+    "batch_size": 16,
+    "eval_batch_size": 64,
+    "learning_rate": 5e-05,
+    "weight_decay": 0.01,
+    "warmup_ratio": 0.1,
+    "max_len": 128,
+    "dropout": 0.1,
+    "max_grad_norm": 1.0,
+    "fp16": true,
+    "save_checkpoint": false,
+    "mtl": {
+      "sampling": "proportional",
+      "temperature": 1.0,
+      "loss_weights": {},
+      "pcgrad": false
+    }
+  },
+  "env": {
+    "torch": "2.11.0+cu130",
+    "transformers": "4.57.0",
+    "device": "cuda",
+    "git_commit": "701a8db5bae75daae7bfeea8a0b25cc34b2801aa",
+    "gpu": "Tesla T4"
+  }
+}

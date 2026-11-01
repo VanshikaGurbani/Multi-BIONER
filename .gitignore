@@ -11,6 +11,6 @@ dist/
 # data is downloaded by `bioner prepare-data`, never committed
 data/
 # raw per-sentence predictions and checkpoints stay out of git; metrics.json files are committed
-results/**/predictions_*.jsonl.gz
+results/**/predictions_*
 results/**/checkpoint/
 .DS_Store

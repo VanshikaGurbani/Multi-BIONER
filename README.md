@@ -18,7 +18,15 @@ Numbers in this section are written by `python -m bioner report` from result fil
 produced by training runs. Nothing is typed in by hand.
 
 <!-- RESULTS:START -->
-_No measured results are committed yet. They are produced by `notebooks/colab_run.ipynb` and written here by `bioner report`._
+Test **entity-level** F1 (%), seqeval strict IOBES, mean ± std over seeds, epoch chosen on the devel split.
+
+| Experiment | Seeds | BC2GM | BC4CHEMD | BC5CDR | JNLPBA | NCBI | Macro avg |
+|:--|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| `stl_biobert` | 3 | 83.48 ± 0.14 | 90.25 ± 0.02 | 88.99 ± 0.13 | 75.38 ± 0.20 | 88.79 ± 0.07 | 85.38 ± 0.02 |
+| `mtl_proportional` | 3 | 82.90 ± 0.18 | 89.96 ± 0.09 | 89.09 ± 0.20 | 75.48 ± 0.20 | 88.21 ± 0.40 | 85.13 ± 0.06 |
+| `mtl_temp2` | 3 | 82.92 ± 0.24 | 89.86 ± 0.05 | 89.35 ± 0.26 | 75.27 ± 0.12 | 88.51 ± 0.22 | 85.18 ± 0.05 |
+
+Details, precision/recall, paired differences and limitations: [docs/RESULTS.md](docs/RESULTS.md).
 <!-- RESULTS:END -->
 
 For precision/recall, paired single-task vs multi-task differences, per-entity-type scores and the
